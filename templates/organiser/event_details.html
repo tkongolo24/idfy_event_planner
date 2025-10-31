@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}{{ event.name }} - Event Verifier{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <div class="mb-6">
+        <a href="{{ url_for('dashboard') }}" class="text-purple-600 hover:underline">← Back to Dashboard</a>
+    </div>
+    
+    <div class="bg-white p-8 rounded-xl shadow-lg mb-6">
+        <h2 class="text-3xl font-bold mb-4">{{ event.name }}</h2>
+        
+        <div class="grid md:grid-cols-4 gap-4 mb-6">
+            <div>
+                <p class="text-gray-600 text-sm">Date</p>
+                <p class="font-bold">{{ event.date }}</p>
+            </div>
+            <div>
+                <p class="text-gray-600 text-sm">Venue</p>
+                <p class="font-bold">{{ event.venue }}</p>
+            </div>
+            <div>
+                <p class="text-gray-600 text-sm">Capacity</p>
+                <p class="font-bold">{{ event.tickets|length }}/{{ event.max_tickets }}</p>
+            </div>
+            <div>
+                <p class="text-gray-600 text-sm">Price</p>
+                <p class="font-bold">{% if event.ticket_price > 0 %}RWF {{ event.ticket_price }}{% else %}Free{% endif %}</p>
+            </div>
+        </div>
+        
+        <div class="bg-purple-50 p-6 rounded-lg">
+            <h3 class="font-bold mb-2">📱 Registration Link</h3>
+            <p class="text-sm text-gray-600 mb-3">Share this link for attendees to register:</p>
+            <div class="flex gap-2">
+                <input type="text" value="{{ registration_url }}" readonly 
+                       class="flex-1 px-4 py-2 border rounded-lg bg-white text-sm" id="regLink">
+                <button onclick="copyLink()" class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 font-bold">
+                    Copy
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Stats Overview -->
+    <div class="grid md:grid-cols-3 gap-6 mb-6">
+        <div class="bg-yellow-50 border-2 border-yellow-200 p-6 rounded-xl">
+            <div class="text-3xl font-bold text-yellow-600">{{ pending|length }}</div>
+            <p class="text-gray-600 font-medium">⏳ Pending Approval</p>
+        </div>
+        <div class="bg-green-50 border-2 border-green-200 p-6 rounded-xl">
+            <div class="text-3xl font-bold text-green-600">{{ approved|length }}</div>
+            <p class="text-gray-600 font-medium">✅ Approved Tickets</p>
+        </div>
+        <div class="bg-blue-50 border-2 border-blue-200 p-6 rounded-xl">
+            <div class="text-3xl font-bold text-blue-600">{{ used|length }}</div>
+            <p class="text-gray-600 font-medium">🎟️ Checked In</p>
+        </div>
+    </div>
+    
+    <!-- Pending Approvals -->
+    {% if pending %}
+    <div class="bg-white p-6 rounded-xl shadow-lg mb-6">
+        <h3 class="text-2xl font-bold mb-4 text-yellow-600">⏳ Pending Payment Approval ({{ pending|length }})</h3>
+        <div class="space-y-3">
+            {% for ticket in pending %}
+            <div class="border border-yellow-200 bg-yellow-50 p-4 rounded-lg flex justify-between items-center">
+                <div>
+                    <p class="font-bold">{{ ticket.attendee_name }}</p>
+                    <p class="text-sm text-gray-600">📞 {{ ticket.attendee_phone }}</p>
+                    <p class="text-sm text-gray-600">🎫 {{ ticket.code }}</p>
+                    {% if ticket.payment_reference %}
+                    <p class="text-xs text-gray-500 mt-1">Ref: {{ ticket.payment_reference }}</p>
+                    {% endif %}
+                </div>
+                <div class="flex gap-2">
+                    <a href="{{ url_for('approve_ticket', ticket_id=ticket.id) }}" 
+                       class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 font-bold">
+                        ✅ Approve
+                    </a>
+                    <a href="{{ url_for('reject_ticket', ticket_id=ticket.id) }}" 
+                       onclick="return confirm('Reject this ticket?')"
+                       class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 font-bold">
+                        ❌ Reject
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Approved Tickets -->
+    {% if approved %}
+    <div class="bg-white p-6 rounded-xl shadow-lg mb-6">
+        <h3 class="text-2xl font-bold mb-4 text-green-600">✅ Approved Tickets ({{ approved|length }})</h3>
+        <div class="grid md:grid-cols-2 gap-3">
+            {% for ticket in approved %}
+            <div class="border border-green-200 bg-green-50 p-4 rounded-lg">
+                <p class="font-bold">{{ ticket.attendee_name }}</p>
+                <p class="text-sm text-gray-600">📞 {{ ticket.attendee_phone }}</p>
+                <p class="text-sm text-gray-600">🎫 {{ ticket.code }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Checked In Tickets -->
+    {% if used %}
+    <div class="bg-white p-6 rounded-xl shadow-lg">
+        <h3 class="text-2xl font-bold mb-4 text-blue-600">🎟️ Checked In ({{ used|length }})</h3>
+        <div class="grid md:grid-cols-2 gap-3">
+            {% for ticket in used %}
+            <div class="border border-blue-200 bg-blue-50 p-4 rounded-lg">
+                <p class="font-bold">{{ ticket.attendee_name }}</p>
+                <p class="text-sm text-gray-600">📞 {{ ticket.attendee_phone }}</p>
+                <p class="text-sm text-gray-600">🕐 {{ ticket.checked_in_at.strftime('%I:%M %p') }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
+    {% if not pending and not approved and not used %}
+    <div class="bg-white p-12 rounded-xl shadow-lg text-center">
+        <div class="text-6xl mb-4">📢</div>
+        <h3 class="text-2xl font-bold mb-4">No Registrations Yet</h3>
+        <p class="text-gray-600 mb-6">Share your registration link to start receiving ticket requests!</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

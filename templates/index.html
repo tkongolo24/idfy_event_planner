@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Event Verifier - Stop Fake Tickets{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <div class="text-center mb-16 mt-8">
+        <h1 class="text-6xl font-bold text-gray-800 mb-6">🎟️ Event Verifier</h1>
+        <p class="text-2xl text-gray-600 mb-4">Stop fake tickets. Verify attendees instantly.</p>
+        <p class="text-lg text-gray-500">QR code verification system for event organizers</p>
+    </div>
+    
+    <div class="grid md:grid-cols-2 gap-8 mb-16">
+        <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl transition">
+            <div class="text-5xl mb-4">👨‍💼</div>
+            <h3 class="text-2xl font-bold mb-4">For Organizers</h3>
+            <p class="text-gray-600 mb-6">Create events, issue tickets, and verify attendees at the door</p>
+            <div class="space-y-3">
+                <a href="{{ url_for('login') }}" class="block text-center bg-purple-600 text-white px-8 py-3 rounded-lg hover:bg-purple-700 font-bold">Login</a>
+                <a href="{{ url_for('register') }}" class="block text-center border-2 border-purple-600 text-purple-600 px-8 py-3 rounded-lg hover:bg-purple-50 font-bold">Create Account</a>
+            </div>
+        </div>
+        
+        <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl transition">
+            <div class="text-5xl mb-4">🔍</div>
+            <h3 class="text-2xl font-bold mb-4">At The Door</h3>
+            <p class="text-gray-600 mb-6">Scan or enter ticket codes to verify attendees instantly</p>
+            <a href="{{ url_for('verify') }}" class="block text-center bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 font-bold">Verify Ticket</a>
+        </div>
+    </div>
+    
+    <div class="bg-white p-10 rounded-xl shadow-lg">
+        <h3 class="text-3xl font-bold mb-8 text-center">How It Works</h3>
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="text-center">
+                <div class="text-5xl mb-4">1️⃣</div>
+                <h4 class="font-bold text-xl mb-3">Create Event</h4>
+                <p class="text-gray-600">Set up your event details and get a unique registration link</p>
+            </div>
+            <div class="text-center">
+                <div class="text-5xl mb-4">2️⃣</div>
+                <h4 class="font-bold text-xl mb-3">Share Link</h4>
+                <p class="text-gray-600">Attendees register and receive unique QR code tickets</p>
+            </div>
+            <div class="text-center">
+                <div class="text-5xl mb-4">3️⃣</div>
+                <h4 class="font-bold text-xl mb-3">Verify Entry</h4>
+                <p class="text-gray-600">Scan tickets at the door - each works only once</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-12 bg-gradient-to-r from-purple-600 to-blue-600 text-white p-10 rounded-xl text-center">
+        <h3 class="text-3xl font-bold mb-4">Why Event Verifier?</h3>
+        <div class="grid md:grid-cols-3 gap-6 mt-8">
+            <div>
+                <div class="text-4xl mb-2">🚫</div>
+                <h4 class="font-bold mb-2">No More Duplicates</h4>
+                <p class="text-purple-100">Each ticket can only be used once</p>
+            </div>
+            <div>
+                <div class="text-4xl mb-2">⚡</div>
+                <h4 class="font-bold mb-2">Instant Verification</h4>
+                <p class="text-purple-100">Verify tickets in under 3 seconds</p>
+            </div>
+            <div>
+                <div class="text-4xl mb-2">📊</div>
+                <h4 class="font-bold mb-2">Live Dashboard</h4>
+                <p class="text-purple-100">Track check-ins in real-time</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
