@@ -28,8 +28,9 @@ class Ticket(db.Model):
     code = db.Column(db.String(20), unique=True, nullable=False)
     attendee_name = db.Column(db.String(100), nullable=False)
     attendee_phone = db.Column(db.String(20), nullable=False)
-    status = db.Column(db.String(20), default='pending')  # pending, approved, used
+    status = db.Column(db.String(20), default='pending')
     payment_reference = db.Column(db.String(100))
+    view_token = db.Column(db.String(50), unique=True)  # ← ADD THIS LINE
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
     checked_in_at = db.Column(db.DateTime)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)

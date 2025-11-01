@@ -47,8 +47,9 @@ def register():
         )
         db.session.add(user)
         db.session.commit()
-        flash('Registration successful! Please login.', 'success')
-        return redirect(url_for('login'))
+        session['user_id'] = user.id  # Auto-login
+    flash('Account created! Welcome!', 'success')
+    return redirect(url_for('dashboard'))
     
     return render_template('auth/register.html')
 

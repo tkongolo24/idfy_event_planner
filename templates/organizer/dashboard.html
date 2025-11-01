@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Event Verifier{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <div class="flex justify-between items-center mb-8">
+        <div>
+            <h2 class="text-3xl font-bold">My Events</h2>
+            <p class="text-gray-600 mt-1">Manage your events and tickets</p>
+        </div>
+        <a href="{{ url_for('create_event') }}" class="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 font-bold">+ Create Event</a>
+    </div>
+    
+    {% if events %}
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for event in events %}
+                <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition">
+                    <h3 class="text-xl font-bold mb-2">{{ event.name }}</h3>
+                    <p class="text-gray-600 mb-1">📅 {{ event.date }}</p>
+                    <p class="text-gray-600 mb-4">📍 {{ event.venue }}</p>
+                    
+                    {% set total = event.tickets|length %}
+                    {% set approved = event.tickets|selectattr('status', 'equalto', 'approved')|list|length %}
+                    {% set used = event.tickets|selectattr('status', 'equalto', 'used')|list|length %}
+                    {% set pending = event.tickets|selectattr('status', 'equalto', 'pending')|list|length %}
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-sm">Total Tickets:</span>
+                            <span class="font-bold">{{ total }}/{{ event.max_tickets }}</span>
+                        </div>
+                        <div class="flex justify-between mb-2">
+                            <span class="text-sm">⏳ Pending:</span>
+                            <span class="font-bold text-yellow-600">{{ pending }}</span>
+                        </div>
+                        <div class="flex justify-between mb-2">
+                            <span class="text-sm">✅ Approved:</span>
+                            <span class="font-bold text-green-600">{{ approved }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm">🎟️ Checked In:</span>
+                            <span class="font-bold text-blue-600">{{ used }}</span>
+                        </div>
+                    </div>
+                    
+                    <a href="{{ url_for('event_details', event_id=event.id) }}" class="block text-center bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition">
+                        Manage Event
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="bg-white p-12 rounded-xl shadow-lg text-center">
+            <div class="text-6xl mb-4">🎉</div>
+            <h3 class="text-2xl font-bold mb-4">Welcome to Event Verifier!</h3>
+            <p class="text-xl text-gray-600 mb-6">You haven't created any events yet</p>
+            <a href="{{ url_for('create_event') }}" class="inline-block bg-purple-600 text-white px-8 py-3 rounded-lg hover:bg-purple-700 font-bold text-lg">Create Your First Event</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
